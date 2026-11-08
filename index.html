@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="km">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ការស្ទង់មតិ និងលទ្ធផលទិន្នន័យ</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- បញ្ចូល Chart.js សម្រាប់គូរក្រាហ្វិក -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background-color: #f0ebf8;
+        font-family: "Kantumruy Pro", sans-serif;
+        color: #202124;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+      }
+      .container {
+        width: 100%;
+        max-width: 800px;
+      }
+      .card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .header-card {
+        border-top: 8px solid #673ab7;
+      }
+      h1,
+      h2 {
+        margin-top: 0;
+      }
+      .question-title {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 16px;
+      }
+      .required {
+        color: #d93025;
+      }
+      .option {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+      }
+      .option input {
+        margin-right: 12px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+      .option label {
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .other-input {
+        border: none;
+        border-bottom: 1px solid #dadce0;
+        outline: none;
+        padding: 4px 8px;
+        margin-left: 8px;
+        width: 60%;
+      }
+      .scale-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+      }
+      textarea {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #dadce0;
+        outline: none;
+        padding: 8px 0;
+        min-height: 30px;
+        font-family: inherit;
+      }
+      .btn {
+        background-color: #673ab7;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 24px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn-outline {
+        background-color: white;
+        color: #673ab7;
+        border: 1px solid #673ab7;
+        margin-top: 15px;
+      }
+
+      /* សម្រាប់ Sheet View (Table) */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 13px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #673ab7;
+        color: white;
+      }
+
+      /* សម្រាប់ Chart */
+      .chart-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto 30px auto;
+      }
+
+      #resultSection {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- ផ្នែកទី ១៖ ផ្ទាំងបញ្ជូនទិន្នន័យ (Form View) -->
+      <div id="formSection">
+        <form id="foodSurveyForm">
+          <div class="card header-card">
+            <h1>ការស្ទង់មតិស្តីពី តម្លៃស្បៀងអាហារ</h1>
+            <p>
+              រាល់ព័ត៌មានរបស់អ្នកនឹងត្រូវបានរក្សាការសម្ងាត់។
+              <span class="required">*</span> ចាំបាច់
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ១. តើបច្ចុប្បន្ននេះ អ្នកកំពុងរស់នៅក្នុងតំបន់ជនបទមែនទេ?
+              <span class="required">*</span>
+            </div>
+            <div class="option">
+              <input type="radio" name="q1" value="បាទ/ចាស" required /><label
+                >បាទ/ចាស</label
+              >
+            </div>
+            <div class="option">
+              <input type="radio" name="q1" value="ទេ" /><label>ទេ</label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ២. តើអ្នកសង្កេតឃើញតម្លៃស្បៀងអាហារមានការប្រែប្រួលយ៉ាងដូចម្តេច?
+              <span class="required">*</span>
+            </div>
+            <div class="option">
+              <input
+                type="radio"
+                name="q2"
+                value="កើនឡើងខ្លាំង"
+                required
+              /><label>កើនឡើងខ្លាំង</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q2" value="កើនឡើងបន្តិចបន្តួច" /><label
+                >កើនឡើងបន្តិចបន្តួច</label
+              >
+            </div>
+            <div class="option">
+              <input type="radio" name="q2" value="នៅថេរដដែល" /><label
+                >នៅថេរដដែល</label
+              >
+            </div>
+            <div class="option">
+              <input type="radio" name="q2" value="ធ្លាក់ចុះ" /><label
+                >ធ្លាក់ចុះ</label
+              >
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ៣. តើជះឥទ្ធិពលដល់ចំណាយប្រចាំថ្ងៃកម្រិតណា? (១=មិនប៉ះពាល់ ដល់
+              ៥=ប៉ះពាល់ខ្លាំង) <span class="required">*</span>
+            </div>
+            <div class="scale-container">
+              <input type="radio" name="q3" value="1" required /> 1
+              <input type="radio" name="q3" value="2" /> 2
+              <input type="radio" name="q3" value="3" /> 3
+              <input type="radio" name="q3" value="4" /> 4
+              <input type="radio" name="q3" value="5" /> 5
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ៤. តើដោះស្រាយបញ្ហានេះតាមវិធីណាខ្លះ?
+              <span class="required">*</span>
+            </div>
+            <div class="option">
+              <input
+                type="checkbox"
+                name="q4"
+                value="កាត់បន្ថយការហូបចុក"
+              /><label>កាត់បន្ថយបរិមាណហូបចុកប្រចាំថ្ងៃ</label>
+            </div>
+            <div class="option">
+              <input type="checkbox" name="q4" value="ទិញម្ហូបថោក" /><label
+                >ផ្លាស់ប្តូរទៅទិញម្ហូបអាហារដែលមានតម្លៃថោក</label
+              >
+            </div>
+            <div class="option">
+              <input type="checkbox" name="q4" value="ខ្ចីប្រាក់" /><label
+                >ខ្ចីប្រាក់គេដើម្បីទិញម្ហូបអាហារ</label
+              >
+            </div>
+            <div class="option">
+              <input type="checkbox" name="q4" value="រកការងារបន្ថែម" /><label
+                >ស្វែងរកការងារបន្ថែមដើម្បីបង្កើនចំណូល</label
+              >
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ៥. តើការឡើងថ្លៃស្បៀងអាហារមួយណា ប៉ះពាល់ខ្លាំងជាងគេ?
+              <span class="required">*</span>
+            </div>
+            <div class="option">
+              <input type="radio" name="q5" value="អង្ករ" required /><label
+                >អង្ករ</label
+              >
+            </div>
+            <div class="option">
+              <input type="radio" name="q5" value="សាច់" /><label>សាច់</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q5" value="បន្លែ/ផ្លែឈើ" /><label
+                >បន្លែ និងផ្លែឈើ</label
+              >
+            </div>
+            <div class="option">
+              <input type="radio" name="q5" value="គ្រឿងទេស" /><label
+                >គ្រឿងទេស</label
+              >
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="question-title">
+              ៦. សំណូមពរដល់រដ្ឋាភិបាល៖ <span class="required">*</span>
+            </div>
+            <textarea name="q6" rows="3" required></textarea>
+          </div>
+
+          <button type="submit" class="btn">បញ្ជូនចម្លើយ (Submit)</button>
+        </form>
+      </div>
+
+      <!-- ផ្នែកទី ២៖ ផ្ទាំងលទ្ធផល (Graphic Chart & Sheet View) -->
+      <div id="resultSection">
+        <div class="card header-card">
+          <h2>📊 លទ្ធផលស្ទង់មតិ (Dashboard)</h2>
+          <p>ទិន្នន័យខាងក្រោមនេះបង្កើតឡើងបន្ទាប់ពីអ្នកបានបញ្ជូនចម្លើយ។</p>
+          <button onclick="goBack()" class="btn btn-outline">
+            ត្រឡប់ទៅវាយបញ្ចូលទិន្នន័យថ្មី
+          </button>
+        </div>
+
+        <!-- Graphic Chart -->
+        <div class="card">
+          <h3 style="text-align: center; font-size: 15px">
+            ក្រាហ្វិកបង្ហាញពីការប្រែប្រួលតម្លៃស្បៀងអាហារ (សំណួរទី២)
+          </h3>
+          <div class="chart-container">
+            <canvas id="myChart"></canvas>
+          </div>
+        </div>
+
+        <!-- View in Sheet (Table) -->
+        <div class="card" style="overflow-x: auto">
+          <h3 style="font-size: 15px">ទិន្នន័យចម្លើយ (Sheet View)</h3>
+          <table id="dataTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ទីតាំង</th>
+                <th>ការប្រែប្រួលតម្លៃ</th>
+                <th>កម្រិតប៉ះពាល់</th>
+                <th>ការដោះស្រាយ</th>
+                <th>ស្បៀងប៉ះពាល់ខ្លាំង</th>
+                <th>សំណូមពរ</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- ទិន្នន័យនឹងលោតចូលទីនេះ -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Array សម្រាប់ផ្ទុកទិន្នន័យដូចក្នុង Database/Sheet
+      let surveyData = [];
+      let chartInstance = null; // ទុកលុប Chart ចាស់ចោលមុនគូរថ្មី
+
+      document
+        .getElementById("foodSurveyForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // ១. ទាញយកទិន្នន័យពី Form
+          const formData = new FormData(this);
+          const dataRow = {
+            q1: formData.get("q1"),
+            q2: formData.get("q2"),
+            q3: formData.get("q3"),
+            q4: formData.getAll("q4").join(", "), // សម្រាប់ Checkbox
+            q5: formData.get("q5"),
+            q6: formData.get("q6"),
+          };
+
+          // បន្ថែមទិន្នន័យថ្មីចូលក្នុង Array
+          surveyData.push(dataRow);
+
+          // ២. បិទផ្ទាំង Form បើកផ្ទាំង Dashboard
+          document.getElementById("formSection").style.display = "none";
+          document.getElementById("resultSection").style.display = "block";
+
+          // Clear form សម្រាប់ការបញ្ចូលលើកក្រោយ
+          this.reset();
+
+          // ៣. អាប់ដេត Table (Sheet View)
+          updateSheetView();
+
+          // ៤. អាប់ដេត Graphic Chart
+          updateChart();
+        });
+
+      function updateSheetView() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = ""; // លុបទិន្នន័យចាស់ចោល
+
+        // បញ្ចូលទិន្នន័យថ្មីទៅក្នុងតារាង
+        surveyData.forEach((row, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${row.q1}</td>
+                <td>${row.q2}</td>
+                <td>កម្រិត ${row.q3}</td>
+                <td>${row.q4 || "គ្មាន"}</td>
+                <td>${row.q5}</td>
+                <td>${row.q6}</td>
+            `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function updateChart() {
+        // រាប់ចំនួនចម្លើយនីមួយៗសម្រាប់សំណួរទី២
+        const counts = {
+          កើនឡើងខ្លាំង: 0,
+          កើនឡើងបន្តិចបន្តួច: 0,
+          នៅថេរដដែល: 0,
+          ធ្លាក់ចុះ: 0,
+        };
+        surveyData.forEach((row) => {
+          if (counts[row.q2] !== undefined) counts[row.q2]++;
+        });
+
+        // គូរ Graphic
+        const ctx = document.getElementById("myChart").getContext("2d");
+        if (chartInstance) {
+          chartInstance.destroy();
+        } // លុបក្រាហ្វចាស់មុនគូរថ្មី
+
+        chartInstance = new Chart(ctx, {
+          type: "pie", // ប្រភេទក្រាហ្វរង្វង់
+          data: {
+            labels: Object.keys(counts),
+            datasets: [
+              {
+                data: Object.values(counts),
+                backgroundColor: ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+      }
+
+      function goBack() {
+        // ត្រឡប់ទៅផ្ទាំង Form វិញ
+        document.getElementById("resultSection").style.display = "none";
+        document.getElementById("formSection").style.display = "block";
+      }
+    </script>
+  </body>
+</html>
